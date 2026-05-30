@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Shelf — Curated Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --cream: #F5F0E8; --paper: #FAF7F2; --ink: #1A1714;
+  --ink-soft: #4A4540; --ink-faint: #9A9590;
+  --accent: #C8402A; --gold: #B8860B; --green: #2E7D32;
+  --border: rgba(26,23,20,0.1); --border-strong: rgba(26,23,20,0.22);
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body: 'DM Sans', sans-serif;
+  --ff-mono: 'DM Mono', monospace;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--cream); color: var(--ink); font-family: var(--ff-body); font-weight: 300; min-height: 100vh; line-height: 1.6; }
+
+/* ── HEADER ─────────────────────────────────── */
+header { background: var(--ink); color: var(--cream); padding: 0 2rem; position: sticky; top: 0; z-index: 200; display: flex; align-items: center; justify-content: space-between; height: 56px; border-bottom: 2px solid var(--accent); gap: 1rem; }
+.logo { font-family: var(--ff-display); font-size: 1.4rem; letter-spacing: 0.02em; flex-shrink: 0; }
+.logo span { color: var(--accent); font-style: italic; }
+.header-tabs { display: flex; gap: 0; }
+.header-tab { color: rgba(245,240,232,0.55); background: none; border: none; font-family: var(--ff-body); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; padding: 0 18px; height: 56px; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.18s; white-space: nowrap; }
+.header-tab:hover { color: var(--cream); }
+.header-tab.active { color: var(--cream); border-bottom-color: var(--accent); }
+.header-right { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+.user-chip { display: flex; align-items: center; gap: 8px; color: rgba(245,240,232,0.8); font-size: 13px; }
+.avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white; flex-shrink: 0; }
+.btn-hdr { background: var(--accent); color: white; border: none; padding: 7px 14px; font-family: var(--ff-body); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: opacity 0.2s; white-space: nowrap; }
+.btn-hdr:hover { opacity: 0.85; }
+.btn-hdr.ghost { background: transparent; color: rgba(245,240,232,0.7); border: 1px solid rgba(245,240,232,0.25); }
+.btn-hdr.ghost:hover { color: var(--cream); border-color: rgba(245,240,232,0.5); opacity: 1; }
+
+/* ── PAGE SECTIONS ──────────────────────────── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── HERO ───────────────────────────────────── */
+.hero { background: var(--ink); color: var(--cream); padding: 5rem 2rem 4rem; text-align: center; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(245,240,232,.04) 39px,rgba(245,240,232,.04) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(245,240,232,.04) 39px,rgba(245,240,232,.04) 40px); }
+.hero-tag { display: inline-block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 4px 12px; margin-bottom: 1.5rem; font-family: var(--ff-mono); }
+.hero h1 { font-family: var(--ff-display); font-size: clamp(2.5rem,5vw,4.5rem); font-weight: 400; line-height: 1.1; margin-bottom: 1rem; position: relative; }
+.hero h1 em { color: var(--accent); }
+.hero p { color: rgba(245,240,232,.6); max-width: 520px; margin: 0 auto 2.5rem; font-size: 15px; }
+.hero-stats { display: flex; gap: 3rem; justify-content: center; position: relative; }
+.stat-val { font-family: var(--ff-display); font-size: 2rem; display: block; color: var(--cream); }
+.stat-lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); }
+
+/* ── TOOLBAR ────────────────────────────────── */
+.toolbar { background: var(--paper); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; position: sticky; top: 56px; z-index: 90; }
+.search-wrap { flex: 1; min-width: 200px; position: relative; }
+.search-wrap input { width: 100%; padding: 9px 14px 9px 36px; border: 1px solid var(--border-strong); background: white; font-family: var(--ff-body); font-size: 13px; border-radius: 2px; outline: none; color: var(--ink); transition: border-color 0.2s; }
+.search-wrap input:focus { border-color: var(--accent); }
+.search-wrap::before { content: '⌕'; position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); font-size: 18px; pointer-events: none; }
+.cat-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat-btn { font-family: var(--ff-body); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 12px; border: 1px solid var(--border-strong); background: transparent; cursor: pointer; border-radius: 2px; transition: all 0.15s; color: var(--ink-soft); white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+.cat-btn:hover { background: var(--cream); }
+.cat-btn.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+.cat-btn .del-cat { display: none; font-size: 14px; line-height: 1; opacity: 0.5; }
+.cat-btn:hover .del-cat { display: inline; }
+.cat-btn.active .del-cat { display: none !important; }
+.view-toggle { display: flex; gap: 4px; margin-left: auto; }
+.view-btn { border: 1px solid var(--border-strong); background: transparent; padding: 7px 10px; cursor: pointer; border-radius: 2px; font-size: 15px; transition: all 0.15s; color: var(--ink-soft); }
+.view-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+.sort-bar { padding: 0.75rem 2rem; display: flex; align-items: center; gap: 1rem; font-size: 12px; color: var(--ink-faint); border-bottom: 1px solid var(--border); }
+.sort-bar select { border: none; background: transparent; font-family: var(--ff-body); font-size: 12px; color: var(--ink-soft); cursor: pointer; outline: none; }
+#result-count { margin-left: auto; font-style: italic; }
+
+/* ── BOOKS GRID / LIST ──────────────────────── */
+main { padding: 2rem; }
+.books-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 1.5rem; }
+.books-list { display: flex; flex-direction: column; gap: 1px; }
+.book-card { background: white; border: 1px solid var(--border); border-radius: 2px; display: flex; flex-direction: column; transition: box-shadow 0.2s,transform 0.2s; cursor: pointer; position: relative; overflow: hidden; }
+.book-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--cat-color,var(--accent)); opacity: 0; transition: opacity 0.2s; }
+.book-card:hover { box-shadow: 0 8px 32px rgba(26,23,20,.1); transform: translateY(-2px); }
+.book-card:hover::before { opacity: 1; }
+.card-spine { height: 5px; background: var(--cat-color,var(--accent)); }
+.card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.cat-tag { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; padding: 2px 7px; border-radius: 1px; font-family: var(--ff-mono); }
+.card-title { font-family: var(--ff-display); font-size: 1.05rem; line-height: 1.25; color: var(--ink); }
+.card-author { font-size: 12px; color: var(--ink-faint); }
+.card-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.6; flex: 1; }
+.card-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 1.25rem; border-top: 1px solid var(--border); gap: 8px; flex-wrap: wrap; }
+.stars { color: var(--gold); font-size: 13px; letter-spacing: -1px; }
+.review-count { font-size: 11px; color: var(--ink-faint); }
+.card-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.btn-amazon { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 10px; background: #FF9900; color: white; border: none; cursor: pointer; border-radius: 2px; text-decoration: none; display: inline-block; transition: opacity 0.15s; font-family: var(--ff-body); }
+.btn-amazon:hover { opacity: 0.85; }
+.btn-sm { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 10px; background: transparent; color: var(--ink-soft); border: 1px solid var(--border-strong); cursor: pointer; border-radius: 2px; transition: all 0.15s; font-family: var(--ff-body); }
+.btn-sm:hover { background: var(--cream); }
+.btn-sm.danger { color: #c0392b; border-color: rgba(192,57,43,.3); }
+.btn-sm.danger:hover { background: #fff5f5; border-color: #c0392b; }
+.books-list .book-card { flex-direction: row; align-items: stretch; }
+.books-list .card-spine { width: 5px; height: auto; }
+.books-list .card-body { flex-direction: row; gap: 1rem; align-items: flex-start; padding: 1rem 1.25rem; }
+.books-list .card-meta { min-width: 160px; }
+.books-list .card-desc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.books-list .card-footer { border-top: none; border-left: 1px solid var(--border); padding: 1rem; min-width: 190px; flex-direction: column; align-items: flex-start; gap: 6px; }
+
+/* ── BLOG PAGE ──────────────────────────────── */
+.blog-page { max-width: 900px; margin: 0 auto; padding: 2rem; }
+.blog-hero { text-align: center; padding: 3rem 0 2rem; }
+.blog-hero h2 { font-family: var(--ff-display); font-size: clamp(2rem,4vw,3rem); font-weight: 400; margin-bottom: 0.5rem; }
+.blog-hero p { color: var(--ink-soft); font-size: 15px; }
+.blog-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+.blog-search { position: relative; flex: 1; min-width: 200px; max-width: 340px; }
+.blog-search input { width: 100%; padding: 8px 14px 8px 34px; border: 1px solid var(--border-strong); background: white; font-family: var(--ff-body); font-size: 13px; border-radius: 2px; outline: none; color: var(--ink); }
+.blog-search input:focus { border-color: var(--accent); }
+.blog-search::before { content: '⌕'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); font-size: 17px; pointer-events: none; }
+.btn-new-post { background: var(--accent); color: white; border: none; padding: 9px 18px; font-family: var(--ff-body); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: opacity 0.2s; }
+.btn-new-post:hover { opacity: 0.85; }
+.blog-list { display: flex; flex-direction: column; gap: 1.5rem; }
+.blog-card { background: white; border: 1px solid var(--border); border-radius: 2px; padding: 1.75rem; cursor: pointer; transition: box-shadow 0.2s,transform 0.2s; position: relative; }
+.blog-card:hover { box-shadow: 0 6px 24px rgba(26,23,20,.09); transform: translateY(-1px); }
+.blog-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; }
+.blog-card-meta { display: flex; align-items: center; gap: 10px; }
+.blog-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; color: white; font-weight: 500; flex-shrink: 0; }
+.blog-author-info .name { font-size: 13px; font-weight: 500; }
+.blog-author-info .date { font-size: 11px; color: var(--ink-faint); }
+.blog-card-actions { display: flex; gap: 6px; }
+.blog-title { font-family: var(--ff-display); font-size: 1.3rem; font-weight: 400; margin-bottom: 0.5rem; line-height: 1.3; }
+.blog-excerpt { font-size: 13px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.blog-footer { display: flex; align-items: center; gap: 1.5rem; font-size: 12px; color: var(--ink-faint); }
+.blog-stat { display: flex; align-items: center; gap: 4px; }
+.blog-tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-family: var(--ff-mono); padding: 2px 8px; background: var(--cream); border-radius: 1px; color: var(--ink-soft); }
+.blog-rating-display { display: flex; align-items: center; gap: 4px; }
+.blog-rating-display .stars { font-size: 12px; }
+.no-posts { text-align: center; padding: 4rem 2rem; color: var(--ink-faint); }
+.no-posts .big { font-family: var(--ff-display); font-size: 2.5rem; opacity: 0.3; margin-bottom: 0.75rem; }
+
+/* ── BLOG POST VIEW ─────────────────────────── */
+.post-view { max-width: 720px; margin: 0 auto; padding: 2rem; }
+.post-back { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-faint); cursor: pointer; margin-bottom: 2rem; transition: color 0.15s; background: none; border: none; font-family: var(--ff-body); }
+.post-back:hover { color: var(--accent); }
+.post-header { margin-bottom: 2.5rem; }
+.post-header h1 { font-family: var(--ff-display); font-size: clamp(1.8rem,4vw,2.8rem); font-weight: 400; line-height: 1.2; margin-bottom: 1rem; }
+.post-byline { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+.post-body { font-size: 15px; line-height: 1.85; color: var(--ink-soft); }
+.post-body p { margin-bottom: 1.25rem; }
+.post-body p:last-child { margin-bottom: 0; }
+.post-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+/* blog rating */
+.post-rate-section { margin-bottom: 2.5rem; }
+.post-rate-section h3 { font-family: var(--ff-display); font-size: 1.1rem; font-weight: 400; margin-bottom: 0.75rem; }
+.rate-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.star-interactive { display: flex; gap: 4px; }
+.star-interactive button { background: none; border: none; font-size: 26px; cursor: pointer; color: #ddd; transition: color 0.1s; padding: 0; line-height: 1; }
+.star-interactive button.lit { color: var(--gold); }
+.rate-summary { font-size: 13px; color: var(--ink-faint); }
+.rate-already { font-size: 13px; color: var(--green); font-style: italic; }
+/* comments */
+.comments-section h3 { font-family: var(--ff-display); font-size: 1.1rem; font-weight: 400; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+.comment-item { padding: 1rem; background: white; border: 1px solid var(--border); border-radius: 2px; margin-bottom: 10px; }
+.comment-meta { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.comment-name { font-size: 13px; font-weight: 500; }
+.comment-date { font-size: 11px; color: var(--ink-faint); }
+.comment-stars { color: var(--gold); font-size: 12px; margin-bottom: 4px; }
+.comment-text { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+.no-comments { font-size: 13px; color: var(--ink-faint); font-style: italic; padding: 1rem 0; }
+.comment-form { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.comment-form h4 { font-family: var(--ff-display); font-size: 1rem; font-weight: 400; margin-bottom: 1rem; }
+.login-prompt { background: var(--paper); border: 1px solid var(--border); border-radius: 2px; padding: 1.25rem; font-size: 13px; color: var(--ink-soft); text-align: center; }
+.login-prompt a { color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+/* ── MODALS ─────────────────────────────────── */
+.modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(26,23,20,.7); display: flex; align-items: center; justify-content: center; padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--paper); border-radius: 3px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; transform: translateY(20px); transition: transform 0.2s; box-shadow: 0 32px 80px rgba(0,0,0,.4); }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-header { padding: 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.modal-header h2 { font-family: var(--ff-display); font-size: 1.35rem; font-weight: 400; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: var(--ink-faint); line-height: 1; flex-shrink: 0; }
+.modal-body { padding: 1.5rem; }
+.modal-wide { max-width: 700px; }
+
+/* shared form styles */
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 5px; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 9px 12px; border: 1px solid var(--border-strong); background: white; font-family: var(--ff-body); font-size: 13px; border-radius: 2px; outline: none; color: var(--ink); transition: border-color 0.2s; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--accent); }
+.form-group textarea { resize: vertical; }
+.form-group textarea.tall { min-height: 200px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.25rem; }
+.btn-primary { background: var(--accent); color: white; border: none; padding: 10px 24px; font-family: var(--ff-body); font-size: 13px; letter-spacing: 0.05em; cursor: pointer; border-radius: 2px; transition: opacity 0.2s; }
+.btn-primary:hover { opacity: 0.85; }
+.btn-secondary { background: transparent; color: var(--ink-soft); border: 1px solid var(--border-strong); padding: 10px 24px; font-family: var(--ff-body); font-size: 13px; cursor: pointer; border-radius: 2px; transition: all 0.15s; }
+.btn-secondary:hover { background: var(--cream); }
+.btn-danger { background: #c0392b; color: white; border: none; padding: 10px 24px; font-family: var(--ff-body); font-size: 13px; cursor: pointer; border-radius: 2px; transition: opacity 0.2s; }
+.btn-danger:hover { opacity: 0.85; }
+
+/* auth modal special */
+.auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+.auth-tab { flex: 1; padding: 10px; background: none; border: none; font-family: var(--ff-body); font-size: 13px; cursor: pointer; color: var(--ink-faint); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+.auth-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.auth-section { display: none; }
+.auth-section.active { display: block; }
+.auth-note { font-size: 12px; color: var(--ink-faint); margin-top: 0.5rem; line-height: 1.5; }
+.field-error { font-size: 11px; color: #c0392b; margin-top: 4px; }
+
+/* book detail */
+.detail-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
+.detail-author { color: var(--ink-faint); font-size: 14px; margin-bottom: 1rem; }
+.detail-desc { color: var(--ink-soft); font-size: 14px; line-height: 1.75; margin-bottom: 1.5rem; }
+.detail-desc p { margin-bottom: 1rem; }
+.detail-desc p:last-child { margin-bottom: 0; }
+.teen-box { padding: 1rem 1.25rem; border-radius: 0 4px 4px 0; margin-top: 0.5rem; border-left: 3px solid #4CAF50; background: #f0f8f0; }
+.teen-box.caution { background: #fff8f0; border-left-color: #FF9900; }
+.teen-box.adult { background: #fff5f5; border-left-color: #c0392b; }
+.teen-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; font-family: var(--ff-mono); color: var(--ink-faint); margin-bottom: 4px; }
+.detail-actions { display: flex; gap: 8px; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
+.btn-amazon-lg { padding: 10px 20px; background: #FF9900; color: white; border: none; cursor: pointer; font-family: var(--ff-body); font-size: 13px; border-radius: 2px; text-decoration: none; display: inline-block; transition: opacity 0.15s; }
+.btn-amazon-lg:hover { opacity: 0.85; }
+.btn-expand { padding: 10px 18px; background: transparent; color: var(--ink-soft); border: 1px solid var(--border-strong); cursor: pointer; font-family: var(--ff-body); font-size: 13px; border-radius: 2px; transition: all 0.15s; }
+.btn-expand:hover { background: var(--cream); }
+.btn-delete-detail { padding: 10px 16px; background: transparent; color: #c0392b; border: 1px solid rgba(192,57,43,.35); cursor: pointer; font-family: var(--ff-body); font-size: 13px; border-radius: 2px; transition: all 0.15s; margin-left: auto; }
+.btn-delete-detail:hover { background: #fff5f5; }
+.loading-row { display: flex; align-items: center; gap: 10px; color: var(--ink-faint); font-size: 13px; font-style: italic; padding: 1rem 0; }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--border-strong); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.reviews-section h3 { font-family: var(--ff-display); font-size: 1rem; font-weight: 400; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+.review-item { padding: 1rem; background: white; border: 1px solid var(--border); border-radius: 2px; margin-bottom: 10px; }
+.review-meta { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.reviewer-name { font-size: 13px; font-weight: 500; }
+.review-date { font-size: 11px; color: var(--ink-faint); }
+.review-stars { color: var(--gold); font-size: 14px; margin-bottom: 4px; }
+.review-text { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+.no-reviews { font-size: 13px; color: var(--ink-faint); font-style: italic; padding: 1rem 0; }
+.review-form { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+.review-form h4 { font-family: var(--ff-display); font-size: 1rem; font-weight: 400; margin-bottom: 1rem; }
+.star-picker { display: flex; gap: 6px; margin-top: 4px; }
+.star-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: #ccc; transition: color 0.1s; padding: 0; }
+.star-btn.lit { color: var(--gold); }
+
+/* confirm */
+.confirm-body { padding: 1.5rem; }
+.confirm-body p { font-size: 15px; color: var(--ink-soft); margin-bottom: 1.5rem; line-height: 1.6; }
+.confirm-body strong { color: var(--ink); font-weight: 500; }
+
+/* toast */
+.toast { position: fixed; bottom: 2rem; right: 2rem; z-index: 3000; background: var(--ink); color: var(--cream); padding: 12px 20px; border-radius: 3px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.3); transform: translateY(80px); opacity: 0; transition: all 0.3s; max-width: 320px; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid #4CAF50; }
+.toast.danger { border-left: 3px solid #c0392b; }
+.toast.info { border-left: 3px solid #2196F3; }
+
+/* empty state */
+.empty-state { text-align: center; padding: 5rem 2rem; color: var(--ink-faint); }
+.empty-state .big { font-family: var(--ff-display); font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; }
+.empty-state p { font-size: 14px; }
+
+/* footer */
+footer { text-align: center; padding: 3rem 2rem; border-top: 1px solid var(--border); color: var(--ink-faint); font-size: 12px; font-style: italic; margin-top: 4rem; }
+footer strong { color: var(--ink-soft); font-style: normal; font-family: var(--ff-display); }
+
+/* subscriber badge */
+.badge { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--ff-mono); padding: 2px 6px; border-radius: 1px; background: var(--accent); color: white; vertical-align: middle; }
+.badge.mod { background: #1565C0; }
+
+@media (max-width: 640px) {
+  header { padding: 0 1rem; gap: 0.5rem; }
+  .header-tabs { gap: 0; }
+  .header-tab { padding: 0 10px; font-size: 10px; }
+  .hero { padding: 3rem 1.5rem; }
+  .toolbar, main, .blog-page, .post-view { padding: 1rem; }
+  .form-row { grid-template-columns: 1fr; }
+  .hero-stats { gap: 1.5rem; }
+  .books-list .book-card { flex-direction: column; }
+  .books-list .card-spine { width: auto; height: 4px; }
+  .books-list .card-body { flex-direction: column; }
+  .books-list .card-footer { border-left: none; border-top: 1px solid var(--border); min-width: auto; flex-direction: row; flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">The <span>Shelf</span></div>
+  <div class="header-tabs">
+    <button class="header-tab active" onclick="showPage('books')">📚 Books</button>
+    <button class="header-tab" onclick="showPage('blog')">✍️ Blog</button>
+  </div>
+  <div class="header-right" id="header-right">
+    <button class="btn-hdr ghost" onclick="openAuth('login')">Log In</button>
+    <button class="btn-hdr" onclick="openAuth('register')">Join Free</button>
+  </div>
+</header>
+
+<!-- ═══════════════ BOOKS PAGE ═══════════════ -->
+<div class="page active" id="page-books">
+  <section class="hero">
+    <div class="hero-tag">Curated Reading</div>
+    <h1>Books that <em>expand</em><br>your world</h1>
+    <p>A personal library spanning science fiction, economics, finance, history, politics, food, Eastern culture, romance, fantasy, biography, and philosophy.</p>
+    <div class="hero-stats">
+      <div><span class="stat-val" id="stat-books">0</span><span class="stat-lbl">Books</span></div>
+      <div><span class="stat-val" id="stat-reviews">0</span><span class="stat-lbl">Reviews</span></div>
+      <div><span class="stat-val" id="stat-cats">0</span><span class="stat-lbl">Categories</span></div>
+    </div>
+  </section>
+
+  <div class="toolbar" id="books-section">
+    <div class="search-wrap"><input type="text" id="search-input" placeholder="Search title, author, keyword…" oninput="filterBooks()"></div>
+    <div class="cat-filters" id="cat-filters"></div>
+    <div class="view-toggle">
+      <button class="view-btn active" title="Grid" onclick="setView('grid',this)">⊞</button>
+      <button class="view-btn" title="List" onclick="setView('list',this)">≡</button>
+    </div>
+  </div>
+  <div class="sort-bar">
+    <span>Sort by:</span>
+    <select onchange="filterBooks()" id="sort-select">
+      <option value="title">Title A–Z</option>
+      <option value="author">Author</option>
+      <option value="rating">Highest rated</option>
+      <option value="newest">Recently added</option>
+    </select>
+    <span id="result-count"></span>
+  </div>
+  <main><div class="books-grid" id="books-container"></div></main>
+  <footer><strong>The Shelf</strong> — A personal book curation project. Amazon links are provided for convenience.</footer>
+</div>
+
+<!-- ═══════════════ BLOG PAGE ════════════════ -->
+<div class="page" id="page-blog">
+  <div class="blog-page">
+    <!-- Blog list view -->
+    <div id="blog-list-view">
+      <div class="blog-hero">
+        <h2>The Reading Room</h2>
+        <p>Essays, reflections, and book talk from our community of readers.</p>
+      </div>
+      <div class="blog-actions">
+        <div class="blog-search"><input type="text" id="blog-search" placeholder="Search posts…" oninput="filterPosts()"></div>
+        <button class="btn-new-post" id="btn-new-post" onclick="openNewPost()" style="display:none;">✎ Write a Post</button>
+      </div>
+      <div class="blog-list" id="blog-list-container"></div>
+    </div>
+    <!-- Post detail view -->
+    <div id="blog-post-view" style="display:none;">
+      <div class="post-view">
+        <button class="post-back" onclick="closeBlogPost()">← Back to Blog</button>
+        <div class="post-header">
+          <h1 id="pv-title"></h1>
+          <div class="post-byline">
+            <div class="blog-avatar" id="pv-avatar"></div>
+            <div>
+              <div style="font-size:13px;font-weight:500;" id="pv-author"></div>
+              <div style="font-size:11px;color:var(--ink-faint);" id="pv-date"></div>
+            </div>
+          </div>
+        </div>
+        <div class="post-body" id="pv-body"></div>
+        <hr class="post-divider">
+        <!-- RATING -->
+        <div class="post-rate-section">
+          <h3>Rate this post</h3>
+          <div class="rate-row">
+            <div class="star-interactive" id="pv-star-picker"></div>
+            <span class="rate-summary" id="pv-rate-summary"></span>
+          </div>
+          <div id="pv-rate-already" class="rate-already" style="display:none;margin-top:6px;"></div>
+        </div>
+        <!-- COMMENTS -->
+        <div class="comments-section">
+          <h3 id="pv-comments-title">Comments</h3>
+          <div id="pv-comments"></div>
+          <div class="comment-form" id="pv-comment-form"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer style="max-width:900px;margin:0 auto;"><strong>The Shelf</strong> — Community blog for readers.</footer>
+</div>
+
+<!-- ═══════════════ MODALS ════════════════════ -->
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal" onclick="closeModal('auth-modal',event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="auth-modal-title">Welcome to The Shelf</h2>
+      <button class="modal-close" onclick="closeModal('auth-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Log In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Create Account</button>
+      </div>
+      <!-- LOGIN -->
+      <div class="auth-section active" id="auth-login">
+        <div class="form-group"><label>Username or Email</label><input type="text" id="login-user" placeholder="Enter your username or email"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="Your password"></div>
+        <div class="field-error" id="login-error"></div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="doLogin()">Log In</button>
+          <button class="btn-secondary" onclick="closeModal('auth-modal')">Cancel</button>
+        </div>
+        <p class="auth-note" style="margin-top:1rem;">Don't have an account? <a style="color:var(--accent);cursor:pointer;" onclick="switchAuthTab('register')">Create one free</a> — no email required.</p>
+      </div>
+      <!-- REGISTER -->
+      <div class="auth-section" id="auth-register">
+        <div class="form-row">
+          <div class="form-group"><label>Username *</label><input type="text" id="reg-user" placeholder="Choose a username" maxlength="30"></div>
+          <div class="form-group"><label>Display Name *</label><input type="text" id="reg-name" placeholder="Your name as shown" maxlength="40"></div>
+        </div>
+        <div class="form-group"><label>Email (optional)</label><input type="email" id="reg-email" placeholder="you@example.com"></div>
+        <div class="form-group"><label>Password *</label><input type="password" id="reg-pass" placeholder="At least 6 characters"></div>
+        <div class="form-group"><label>Confirm Password *</label><input type="password" id="reg-pass2" placeholder="Repeat password"></div>
+        <div class="form-group">
+          <label>I am a…</label>
+          <select id="reg-role">
+            <option value="reader">Reader</option>
+            <option value="subscriber">Subscriber (can post blogs)</option>
+          </select>
+        </div>
+        <div class="field-error" id="reg-error"></div>
+        <div class="form-actions">
+          <button class="btn-primary" onclick="doRegister()">Create Account</button>
+          <button class="btn-secondary" onclick="closeModal('auth-modal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW / EDIT POST MODAL -->
+<div class="modal-overlay" id="post-modal" onclick="closeModal('post-modal',event)">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2 id="post-modal-title">New Post</h2>
+      <button class="modal-close" onclick="closeModal('post-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>Post Title *</label><input type="text" id="pm-title" placeholder="Give your post a compelling title"></div>
+      <div class="form-group"><label>Tag / Theme</label>
+        <select id="pm-tag">
+          <option value="">None</option>
+          <option value="Review">Book Review</option>
+          <option value="Essay">Essay</option>
+          <option value="Recommendation">Recommendation</option>
+          <option value="Reading List">Reading List</option>
+          <option value="Discussion">Discussion</option>
+          <option value="Personal">Personal</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Content * (write your full post here)</label><textarea class="tall" id="pm-body" placeholder="Share your thoughts…"></textarea></div>
+      <div class="field-error" id="pm-error"></div>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="submitPost()">Publish Post</button>
+        <button class="btn-secondary" onclick="closeModal('post-modal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOK DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal" onclick="closeModal('detail-modal',event)">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2 id="dm-title"></h2>
+      <button class="modal-close" onclick="closeModal('detail-modal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-tags" id="dm-tags"></div>
+      <div class="detail-author" id="dm-author"></div>
+      <div class="detail-desc" id="dm-desc"></div>
+      <div class="detail-actions">
+        <a class="btn-amazon-lg" id="dm-amazon" href="#" target="_blank" rel="noopener">🛒 Buy on Amazon</a>
+        <button class="btn-expand" id="dm-expand-btn" onclick="expandDescription()">✦ Expand with AI</button>
+        <button class="btn-secondary" onclick="showReviewForm()" style="padding:10px 18px;">✎ Review</button>
+        <button class="btn-delete-detail" onclick="confirmDeleteBook(activeBook&&activeBook.id)">🗑 Remove</button>
+      </div>
+      <div class="reviews-section"><h3>Reviews</h3><div id="dm-reviews"></div></div>
+      <div class="review-form" id="review-form" style="display:none;">
+        <h4>Leave a Review</h4>
+        <div id="review-form-inner"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD BOOK MODAL -->
+<div class="modal-overlay" id="add-modal" onclick="closeModal('add-modal',event)">
+  <div class="modal">
+    <div class="modal-header"><h2>Add a Book</h2><button class="modal-close" onclick="closeModal('add-modal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>Title *</label><input type="text" id="ab-title" placeholder="Book title"></div>
+        <div class="form-group"><label>Author *</label><input type="text" id="ab-author" placeholder="Author name"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Category *</label><select id="ab-cat"></select></div>
+        <div class="form-group"><label>Second Category</label><select id="ab-cat2"></select></div>
+      </div>
+      <div class="form-group"><label>Short Description *</label><textarea id="ab-desc" style="min-height:80px;" placeholder="Your take on the book…"></textarea></div>
+      <div class="form-group"><label>Amazon URL (optional)</label><input type="url" id="ab-amazon" placeholder="https://www.amazon.com/dp/..."></div>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="addBook()">Add to Shelf</button>
+        <button class="btn-secondary" onclick="closeModal('add-modal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal" onclick="closeModal('confirm-modal',event)">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header"><h2>Confirm</h2><button class="modal-close" onclick="closeModal('confirm-modal')">&times;</button></div>
+    <div class="confirm-body"><p id="confirm-msg"></p>
+      <div class="form-actions">
+        <button class="btn-danger" id="confirm-ok-btn">Confirm</button>
+        <button class="btn-secondary" onclick="closeModal('confirm-modal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════ */
+let CATS = {
+  scifi:   {label:'Sci-Fi',         color:'#534AB7',bg:'#EEEDFE',fg:'#3C3489'},
+  econ:    {label:'Economics',      color:'#0F6E56',bg:'#E1F5EE',fg:'#085041'},
+  finance: {label:'Finance',        color:'#3B6D11',bg:'#EAF3DE',fg:'#27500A'},
+  history: {label:'History',        color:'#854F0B',bg:'#FAEEDA',fg:'#633806'},
+  politics:{label:'Politics',       color:'#993C1D',bg:'#FAECE7',fg:'#712B13'},
+  food:    {label:'Food & Cooking', color:'#993556',bg:'#FBEAF0',fg:'#72243E'},
+  east:    {label:'Eastern Culture',color:'#A32D2D',bg:'#FCEBEB',fg:'#791F1F'},
+  philo:   {label:'Philosophy',     color:'#5F5E5A',bg:'#F1EFE8',fg:'#444441'},
+  romance: {label:'Romance',        color:'#8B3A8B',bg:'#F5EAFA',fg:'#6A1F6A'},
+  fantasy: {label:'Fantasy',        color:'#1B6E8A',bg:'#E3F4FA',fg:'#0F4F6B'},
+  bio:     {label:'Biography',      color:'#5C5C00',bg:'#F7F7E0',fg:'#3D3D00'},
+  other:   {label:'Other',          color:'#888780',bg:'#F1EFE8',fg:'#444441'},
+};
+
+let BOOKS = [
+  {id:1,title:"Dune",author:"Frank Herbert",cats:["scifi"],desc:"A sweeping epic of ecology, religion, and power on a desert planet. One of the greatest sci-fi novels ever written.",amazon:"https://www.amazon.com/s?k=Dune+Frank+Herbert"},
+  {id:2,title:"Foundation",author:"Isaac Asimov",cats:["scifi"],desc:"A mathematician predicts civilizational collapse and tries to shorten the dark age. Explores history, politics, and human nature.",amazon:"https://www.amazon.com/s?k=Foundation+Isaac+Asimov"},
+  {id:3,title:"The Left Hand of Darkness",author:"Ursula K. Le Guin",cats:["scifi"],desc:"An alien world with no fixed gender challenges what it means to be human. Le Guin at her most profound.",amazon:"https://www.amazon.com/s?k=Left+Hand+of+Darkness+Le+Guin"},
+  {id:4,title:"Flowers for Algernon",author:"Daniel Keyes",cats:["scifi"],desc:"A man's intelligence is artificially boosted — then fades. A gut-punch meditation on intelligence, identity, and belonging.",amazon:"https://www.amazon.com/s?k=Flowers+for+Algernon+Daniel+Keyes"},
+  {id:5,title:"Exhalation",author:"Ted Chiang",cats:["scifi"],desc:"Short story collection that makes you rethink free will, time, and technology. Precise, humane, unforgettable.",amazon:"https://www.amazon.com/s?k=Exhalation+Ted+Chiang"},
+  {id:6,title:"The Three-Body Problem",author:"Liu Cixin",cats:["scifi","east"],desc:"China's Cultural Revolution collides with an alien invasion. Hard sci-fi meets epic Chinese history.",amazon:"https://www.amazon.com/s?k=Three+Body+Problem+Liu+Cixin"},
+  {id:7,title:"Thinking, Fast and Slow",author:"Daniel Kahneman",cats:["econ"],desc:"Nobel laureate Kahneman reveals the two systems that drive how we think — essential for understanding markets and decisions.",amazon:"https://www.amazon.com/s?k=Thinking+Fast+and+Slow+Kahneman"},
+  {id:8,title:"Freakonomics",author:"Levitt & Dubner",cats:["econ"],desc:"Applies economic thinking to surprising corners of life — incentives, crime, parenting — with real data and wit.",amazon:"https://www.amazon.com/s?k=Freakonomics+Levitt+Dubner"},
+  {id:9,title:"The Wealth of Nations",author:"Adam Smith",cats:["econ"],desc:"The foundational text of modern economics. Dense but worth it — read excerpts on division of labor and markets.",amazon:"https://www.amazon.com/s?k=Wealth+of+Nations+Adam+Smith"},
+  {id:10,title:"Misbehaving",author:"Richard Thaler",cats:["econ"],desc:"Behavioral economics from its creator — why humans don't behave like the economic models say they should.",amazon:"https://www.amazon.com/s?k=Misbehaving+Richard+Thaler"},
+  {id:11,title:"The Intelligent Investor",author:"Benjamin Graham",cats:["finance"],desc:"Warren Buffett's bible. Value investing explained for the long-term thinker.",amazon:"https://www.amazon.com/s?k=Intelligent+Investor+Benjamin+Graham"},
+  {id:12,title:"A Random Walk Down Wall Street",author:"Burton Malkiel",cats:["finance"],desc:"Classic case for index investing. Essential primer on how markets actually work versus how people think they work.",amazon:"https://www.amazon.com/s?k=Random+Walk+Down+Wall+Street+Malkiel"},
+  {id:13,title:"Flash Boys",author:"Michael Lewis",cats:["finance"],desc:"A gripping exposé of high-frequency trading on Wall Street. Reads like a thriller.",amazon:"https://www.amazon.com/s?k=Flash+Boys+Michael+Lewis"},
+  {id:14,title:"The Psychology of Money",author:"Morgan Housel",cats:["finance"],desc:"Short, punchy essays on how behavior — not spreadsheets — determines financial outcomes.",amazon:"https://www.amazon.com/s?k=Psychology+of+Money+Morgan+Housel"},
+  {id:15,title:"Liar's Poker",author:"Michael Lewis",cats:["finance"],desc:"Michael Lewis's memoir of 1980s Wall Street excess. Jaw-dropping and endlessly entertaining.",amazon:"https://www.amazon.com/s?k=Liars+Poker+Michael+Lewis"},
+  {id:16,title:"Sapiens",author:"Yuval Noah Harari",cats:["history"],desc:"A sweeping history of humankind from foragers to the information age. Provocative and impossible to put down.",amazon:"https://www.amazon.com/s?k=Sapiens+Yuval+Noah+Harari"},
+  {id:17,title:"The Silk Roads",author:"Peter Frankopan",cats:["history","east"],desc:"Retells world history from the perspective of Central Asia and the East. The West is no longer the center of the story.",amazon:"https://www.amazon.com/s?k=Silk+Roads+Peter+Frankopan"},
+  {id:18,title:"Guns, Germs, and Steel",author:"Jared Diamond",cats:["history"],desc:"Why did some civilizations conquer others? An environmental and geographic argument that changed how historians think.",amazon:"https://www.amazon.com/s?k=Guns+Germs+Steel+Jared+Diamond"},
+  {id:19,title:"SPQR",author:"Mary Beard",cats:["history"],desc:"A fresh, scholarly, and enormously readable history of ancient Rome — and what it still means for us.",amazon:"https://www.amazon.com/s?k=SPQR+Mary+Beard"},
+  {id:20,title:"1984",author:"George Orwell",cats:["politics"],desc:"The definitive novel of totalitarianism, surveillance, and the destruction of truth. More relevant every decade.",amazon:"https://www.amazon.com/s?k=1984+George+Orwell"},
+  {id:21,title:"The Prince",author:"Niccolò Machiavelli",cats:["politics"],desc:"How to gain and keep power. Short, cold, and utterly clear-eyed — required reading for understanding political realism.",amazon:"https://www.amazon.com/s?k=The+Prince+Machiavelli"},
+  {id:22,title:"Democracy in America",author:"Alexis de Tocqueville",cats:["politics"],desc:"A Frenchman's 19th-century observations on American democracy remain startlingly accurate today.",amazon:"https://www.amazon.com/s?k=Democracy+in+America+Tocqueville"},
+  {id:23,title:"The Anatomy of Fascism",author:"Robert Paxton",cats:["politics"],desc:"The definitive scholarly account of how fascism works and why it rises. Essential context for current events.",amazon:"https://www.amazon.com/s?k=Anatomy+of+Fascism+Robert+Paxton"},
+  {id:24,title:"Salt Fat Acid Heat",author:"Samin Nosrat",cats:["food"],desc:"Teaches the underlying logic of great cooking rather than just recipes. Read this before any other cookbook.",amazon:"https://www.amazon.com/s?k=Salt+Fat+Acid+Heat+Samin+Nosrat"},
+  {id:25,title:"The Omnivore's Dilemma",author:"Michael Pollan",cats:["food"],desc:"Where does food come from? Pollan traces four meals back to their origins — a food reckoning.",amazon:"https://www.amazon.com/s?k=Omnivore+Dilemma+Michael+Pollan"},
+  {id:26,title:"The Art of Fermentation",author:"Sandor Katz",cats:["food"],desc:"The bible of fermentation culture. Deep science meets hands-on craft.",amazon:"https://www.amazon.com/s?k=Art+of+Fermentation+Sandor+Katz"},
+  {id:27,title:"The Flavor Thesaurus",author:"Niki Segnit",cats:["food"],desc:"How flavors pair and why. Organized like a thesaurus — leaf through it and suddenly understand cuisine.",amazon:"https://www.amazon.com/s?k=Flavor+Thesaurus+Niki+Segnit"},
+  {id:28,title:"Consider the Fork",author:"Bee Wilson",cats:["food","history"],desc:"A history of cooking tools — how technology has shaped how and what we eat. Inventive and charming.",amazon:"https://www.amazon.com/s?k=Consider+the+Fork+Bee+Wilson"},
+  {id:29,title:"Land of Fish and Rice",author:"Fuchsia Dunlop",cats:["food","east"],desc:"A deep dive into the cuisine of Jiangnan, China — equal parts cookbook and cultural history.",amazon:"https://www.amazon.com/s?k=Land+of+Fish+and+Rice+Fuchsia+Dunlop"},
+  {id:30,title:"Analects",author:"Confucius",cats:["east","philo"],desc:"The teachings of Confucius on ethics, society, and self-improvement. Still shapes East Asia today.",amazon:"https://www.amazon.com/s?k=Analects+Confucius"},
+  {id:31,title:"Tao Te Ching",author:"Laozi",cats:["east","philo"],desc:"81 short poems on the nature of existence, leadership, and simplicity. One of the most translated books ever.",amazon:"https://www.amazon.com/s?k=Tao+Te+Ching+Laozi"},
+  {id:32,title:"The Art of War",author:"Sun Tzu",cats:["east","politics"],desc:"Ancient Chinese military strategy — also a guide to competition, negotiation, and life.",amazon:"https://www.amazon.com/s?k=Art+of+War+Sun+Tzu"},
+  {id:33,title:"Snow Country",author:"Yasunari Kawabata",cats:["east"],desc:"Nobel Prize–winning Japanese novel of melancholy beauty. Minimalist prose, maximum emotional depth.",amazon:"https://www.amazon.com/s?k=Snow+Country+Kawabata"},
+  {id:34,title:"Dream of the Red Chamber",author:"Cao Xueqin",cats:["east"],desc:"China's greatest novel — a multigenerational family saga, love story, and social critique.",amazon:"https://www.amazon.com/s?k=Dream+of+the+Red+Chamber+Cao+Xueqin"},
+  {id:35,title:"Meditations",author:"Marcus Aurelius",cats:["philo"],desc:"Private notes of a Roman emperor on Stoic philosophy. Practical, humble, and endlessly quotable.",amazon:"https://www.amazon.com/s?k=Meditations+Marcus+Aurelius"},
+  {id:36,title:"Sophie's World",author:"Jostein Gaarder",cats:["philo"],desc:"A history of Western philosophy hidden inside a mystery novel. Perfect for the curious teenager.",amazon:"https://www.amazon.com/s?k=Sophie+World+Jostein+Gaarder"},
+  {id:37,title:"Man's Search for Meaning",author:"Viktor Frankl",cats:["philo"],desc:"A psychiatrist survives the Holocaust and discovers that meaning — not pleasure — is the core human drive.",amazon:"https://www.amazon.com/s?k=Man+Search+for+Meaning+Viktor+Frankl"},
+  {id:38,title:"The Story of Art",author:"E.H. Gombrich",cats:["history"],desc:"The most readable art history ever written — a survey that shows how images connect to their times.",amazon:"https://www.amazon.com/s?k=Story+of+Art+Gombrich"},
+  {id:39,title:"Pride and Prejudice",author:"Jane Austen",cats:["romance"],desc:"Austen's masterpiece of wit, social observation, and love. Elizabeth Bennet and Mr. Darcy remain literature's greatest couple.",amazon:"https://www.amazon.com/s?k=Pride+and+Prejudice+Jane+Austen"},
+  {id:40,title:"Normal People",author:"Sally Rooney",cats:["romance"],desc:"A devastating and precise portrait of two young Irish people loving each other badly across years. Modern, raw, and true.",amazon:"https://www.amazon.com/s?k=Normal+People+Sally+Rooney"},
+  {id:41,title:"The Name of the Wind",author:"Patrick Rothfuss",cats:["fantasy"],desc:"A legendary figure tells his own story — magic, music, and myth in exquisite prose.",amazon:"https://www.amazon.com/s?k=Name+of+the+Wind+Patrick+Rothfuss"},
+  {id:42,title:"The Hobbit",author:"J.R.R. Tolkien",cats:["fantasy"],desc:"Bilbo Baggins is swept into an adventure across Middle-earth. The gateway to Tolkien's world — joyful, mythic, and timeless.",amazon:"https://www.amazon.com/s?k=The+Hobbit+Tolkien"},
+  {id:43,title:"The Remains of the Day",author:"Kazuo Ishiguro",cats:["romance","east"],desc:"A reserved English butler reflects on a life of service and the love he suppressed. Devastating in its restraint.",amazon:"https://www.amazon.com/s?k=Remains+of+the+Day+Ishiguro"},
+  {id:44,title:"Leonardo da Vinci",author:"Walter Isaacson",cats:["bio"],desc:"Isaacson's sweeping biography of the ultimate Renaissance man — genius, curiosity, and human complexity made vivid.",amazon:"https://www.amazon.com/s?k=Leonardo+da+Vinci+Walter+Isaacson"},
+  {id:45,title:"The Diary of a Young Girl",author:"Anne Frank",cats:["bio","history"],desc:"Anne Frank's journal from hiding during the Holocaust. One of the most important and moving books ever written.",amazon:"https://www.amazon.com/s?k=Diary+of+a+Young+Girl+Anne+Frank"},
+  {id:46,title:"Steve Jobs",author:"Walter Isaacson",cats:["bio"],desc:"The unauthorized biography of Apple's visionary and tyrant. A study in creativity, obsession, and what it costs to change the world.",amazon:"https://www.amazon.com/s?k=Steve+Jobs+Walter+Isaacson"},
+];
+
+let BOOK_REVIEWS = {};
+let POSTS = [
+  {id:1,authorId:'demo',authorName:'The Shelf',tag:'Essay',title:'Why Every Teenager Should Read Sapiens',body:`There is a particular kind of book that doesn't just inform you — it restructures the way you see everything else. Yuval Noah Harari's Sapiens is exactly that kind of book. It is not merely a history of humanity; it is an argument about what humanity is, a challenge to every assumption you carry about civilization, progress, and meaning.\n\nHarari begins 70,000 years ago with the Cognitive Revolution — the moment, he argues, when Homo sapiens developed the ability to believe in things that don't physically exist. Money. Nations. Human rights. Gods. These are all, in Harari's framing, shared fictions — powerful, world-shaping, but fictions nonetheless. This is not a cynical point. It is a breathtaking one. The capacity to believe in collective myths is precisely what allowed a physically unremarkable primate to conquer the planet.\n\nFor teenagers, who are right at the age of questioning received wisdom, Sapiens arrives at the perfect moment. It gives you intellectual permission to ask: why is any of this arranged this way? Why do we have money? Why do we have nations? Why does anything have the value we assign it? These are not nihilistic questions — they are the beginning of serious thought.\n\nIf there is a criticism, it is that Harari occasionally overstates his case with confidence that the evidence may not fully support. But that is almost a feature for a young reader: you are forced to push back, to verify, to think. Sapiens is not a final answer. It is a starting gun.\n\nRead it. Then argue with it.`,date:'May 10, 2026',ratings:[],comments:[]},
+  {id:2,authorId:'demo2',authorName:'A Fellow Reader',tag:'Review',title:'The Three-Body Problem Changed How I Think About Time',body:`I came to The Three-Body Problem because someone told me it was the most important science fiction novel of the 21st century. I finished it believing they were right, though not quite for the reasons I expected.\n\nLiu Cixin's novel is ostensibly about first contact — humanity discovering an alien civilization. But what the book is really about is the texture of historical time: how civilizations rise and fall in geological rhythms that dwarf individual human lives, and how our tendency to think in human timescales blinds us to the larger forces operating around us.\n\nThe Cultural Revolution sections, which open the book, hit differently when you realize they are not backstory — they are the thematic core. A civilization turned on its own intellectuals, destroyed its own capacity for reason, and in doing so set in motion a chain of consequences that would span centuries. That is the book's thesis: decisions made in historical moments echo far beyond the moment itself.\n\nFor Western readers, Liu Cixin also offers something rarer: a genuinely different imaginative framework. The physics are hard and demanding. The emotional register is cooler than most American sci-fi. The characters are less individually drawn than thematically positioned. Some readers find this alienating. I found it clarifying — a different way of telling a story about the largest questions.\n\nHighly, unreservedly recommended.`,date:'May 15, 2026',ratings:[5,4,5],comments:[{name:'Reader',stars:5,text:'Completely agree — the scope of this book is unlike anything else.',date:'May 16, 2026'}]},
+];
+let nextPostId = 3;
+let nextBookId = 47;
+
+/* ═══════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════ */
+let USERS = {
+  'demo':  {id:'demo', username:'demo', name:'The Shelf', password:'demo123', role:'subscriber', email:''},
+  'demo2': {id:'demo2', username:'demo2', name:'A Fellow Reader', password:'reader123', role:'subscriber', email:''},
+};
+let currentUser = null;
+let activeBook = null;
+let currentStar = 0;
+let currentView = 'grid';
+let activeFilter = 'all';
+let pendingConfirm = null;
+let currentPostId = null;
+let postRatingStar = 0;
+
+function initHeader() {
+  const hr = document.getElementById('header-right');
+  if (currentUser) {
+    const initials = currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const isSub = currentUser.role === 'subscriber';
+    hr.innerHTML = `
+      <div class="user-chip">
+        <div class="avatar">${initials}</div>
+        <span>${currentUser.name}${isSub ? ' <span class="badge">Subscriber</span>' : ''}</span>
+      </div>
+      ${isSub ? '<button class="btn-hdr" onclick="openAdd()">+ Add Book</button>' : ''}
+      <button class="btn-hdr ghost" onclick="doLogout()">Log Out</button>`;
+    document.getElementById('btn-new-post').style.display = isSub ? '' : 'none';
+  } else {
+    hr.innerHTML = `
+      <button class="btn-hdr ghost" onclick="openAuth('login')">Log In</button>
+      <button class="btn-hdr" onclick="openAuth('register')">Join Free</button>`;
+    document.getElementById('btn-new-post').style.display = 'none';
+  }
+}
+
+function openAuth(tab) {
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-error').textContent='';
+  document.getElementById('reg-user').value='';
+  document.getElementById('reg-name').value='';
+  document.getElementById('reg-email').value='';
+  document.getElementById('reg-pass').value='';
+  document.getElementById('reg-pass2').value='';
+  document.getElementById('reg-error').textContent='';
+  switchAuthTab(tab);
+  document.getElementById('auth-modal').classList.add('open');
+}
+
+function switchAuthTab(tab) {
+  ['login','register'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById('auth-'+t).classList.toggle('active', t===tab);
+  });
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim().toLowerCase();
+  const p = document.getElementById('login-pass').value;
+  const user = Object.values(USERS).find(x => (x.username.toLowerCase()===u || x.email.toLowerCase()===u) && x.password===p);
+  if (!user) { document.getElementById('login-error').textContent = 'Incorrect username or password.'; return; }
+  currentUser = user;
+  closeModal('auth-modal');
+  initHeader();
+  showToast(`Welcome back, ${user.name}!`, 'success');
+}
+
+function doRegister() {
+  const username = document.getElementById('reg-user').value.trim();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim().toLowerCase();
+  const pass = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const role = document.getElementById('reg-role').value;
+  const errEl = document.getElementById('reg-error');
+  if (!username||!name||!pass) { errEl.textContent='Please fill in all required fields.'; return; }
+  if (username.length < 3) { errEl.textContent='Username must be at least 3 characters.'; return; }
+  if (pass.length < 6) { errEl.textContent='Password must be at least 6 characters.'; return; }
+  if (pass !== pass2) { errEl.textContent='Passwords do not match.'; return; }
+  if (USERS[username.toLowerCase()]) { errEl.textContent='That username is already taken.'; return; }
+  const id = username.toLowerCase();
+  USERS[id] = {id, username, name, email, password:pass, role};
+  currentUser = USERS[id];
+  closeModal('auth-modal');
+  initHeader();
+  showToast(`Account created! Welcome, ${name}!`, 'success');
+}
+
+function doLogout() {
+  currentUser = null;
+  initHeader();
+  showToast('You have been logged out.', 'info');
+}
+
+/* ═══════════════════════════════════════════
+   PAGE NAVIGATION
+═══════════════════════════════════════════ */
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.header-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const tabIndex = page==='books'?0:1;
+  document.querySelectorAll('.header-tab')[tabIndex].classList.add('active');
+  if (page==='blog') renderPosts();
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════════════════
+   BOOKS
+═══════════════════════════════════════════ */
+function aUrl(title,author){return`https://www.amazon.com/s?k=${encodeURIComponent(title+' '+author)}`;}
+function starsHTML(n){if(!n)return'<span style="color:#ccc;font-size:12px;">No ratings yet</span>';return'★'.repeat(Math.round(n))+'☆'.repeat(5-Math.round(n));}
+function avgRating(id){const rs=BOOK_REVIEWS[id]||[];if(!rs.length)return 0;return rs.reduce((a,r)=>a+r.stars,0)/rs.length;}
+function tagHTML(cat){const c=CATS[cat]||CATS.other;return`<span class="cat-tag" style="background:${c.bg};color:${c.fg};">${c.label}</span>`;}
+
+function populateCatSelects(){
+  const opts=Object.entries(CATS).filter(([k])=>k!=='other').map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+  document.getElementById('ab-cat').innerHTML='<option value="">Select…</option>'+opts;
+  document.getElementById('ab-cat2').innerHTML='<option value="">None</option>'+opts;
+}
+
+function renderFilters(){
+  const c=document.getElementById('cat-filters');
+  const btns=[{key:'all',label:'All'},...Object.entries(CATS).filter(([k])=>k!=='other').map(([k,v])=>({key:k,label:v.label}))];
+  c.innerHTML=btns.map(b=>{
+    const del=b.key!=='all'?`<span class="del-cat" onclick="event.stopPropagation();confirmDeleteCat('${b.key}')" title="Remove category">×</span>`:'';
+    return`<button class="cat-btn${activeFilter===b.key?' active':''}" onclick="setFilter('${b.key}')">${b.label}${del}</button>`;
+  }).join('');
+}
+
+function filterBooks(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const sort=document.getElementById('sort-select').value;
+  let list=BOOKS.filter(b=>{
+    if(activeFilter!=='all'&&!b.cats.includes(activeFilter))return false;
+    if(q&&!b.title.toLowerCase().includes(q)&&!b.author.toLowerCase().includes(q)&&!b.desc.toLowerCase().includes(q))return false;
+    return true;
+  });
+  if(sort==='title')list.sort((a,b)=>a.title.localeCompare(b.title));
+  else if(sort==='author')list.sort((a,b)=>a.author.localeCompare(b.author));
+  else if(sort==='rating')list.sort((a,b)=>avgRating(b.id)-avgRating(a.id));
+  else if(sort==='newest')list.sort((a,b)=>b.id-a.id);
+  renderBooks(list);
+}
+
+function renderBooks(list){
+  const el=document.getElementById('books-container');
+  el.className=currentView==='grid'?'books-grid':'books-list';
+  document.getElementById('result-count').textContent=`${list.length} book${list.length!==1?'s':''}`;
+  if(!list.length){el.innerHTML=`<div class="empty-state"><div class="big">📚</div><p>No books found.<br>Try a different search or add one!</p></div>`;return;}
+  el.innerHTML=list.map(b=>{
+    const cc=(CATS[b.cats[0]]||CATS.other).color;
+    const avg=avgRating(b.id);const rc=(BOOK_REVIEWS[b.id]||[]).length;
+    return`<div class="book-card" style="--cat-color:${cc};" onclick="openDetail(${b.id})">
+      <div class="card-spine"></div>
+      <div class="card-body">
+        <div class="card-meta"><div class="card-tags">${b.cats.map(tagHTML).join('')}</div><div class="card-title">${b.title}</div><div class="card-author">${b.author}</div></div>
+        <div class="card-desc">${b.shortDesc||b.desc}</div>
+      </div>
+      <div class="card-footer">
+        <div><div class="stars">${starsHTML(avg)}</div><div class="review-count">${rc?rc+' review'+(rc>1?'s':''):'No reviews yet'}</div></div>
+        <div class="card-actions" onclick="event.stopPropagation()">
+          <a class="btn-amazon" href="${b.amazon||aUrl(b.title,b.author)}" target="_blank" rel="noopener">Amazon</a>
+          <button class="btn-sm" onclick="openDetail(${b.id},true)">Review</button>
+          <button class="btn-sm danger" onclick="confirmDeleteBook(${b.id})">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  updateStats();
+}
+
+function updateStats(){
+  document.getElementById('stat-books').textContent=BOOKS.length;
+  document.getElementById('stat-reviews').textContent=Object.values(BOOK_REVIEWS).reduce((a,r)=>a+r.length,0);
+  document.getElementById('stat-cats').textContent=new Set(BOOKS.flatMap(b=>b.cats)).size;
+}
+
+function setFilter(cat){activeFilter=cat;renderFilters();filterBooks();}
+function setView(v,btn){currentView=v;document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filterBooks();}
+
+function openDetail(id,showForm){
+  const b=BOOKS.find(x=>x.id===id);if(!b)return;
+  activeBook=b;
+  document.getElementById('dm-title').textContent=b.title;
+  document.getElementById('dm-author').textContent='by '+b.author;
+  document.getElementById('dm-amazon').href=b.amazon||aUrl(b.title,b.author);
+  document.getElementById('dm-tags').innerHTML=b.cats.map(tagHTML).join('');
+  const descEl=document.getElementById('dm-desc');
+  if(b.longDesc){renderLongDesc(b.longDesc,descEl);document.getElementById('dm-expand-btn').style.display='none';}
+  else{descEl.innerHTML=`<p>${b.desc}</p>`;document.getElementById('dm-expand-btn').style.display='';document.getElementById('dm-expand-btn').textContent='✦ Expand with AI';document.getElementById('dm-expand-btn').disabled=false;}
+  renderBookReviews(id);
+  currentStar=0;setStar(0);
+  const rf=document.getElementById('review-form');
+  rf.style.display='none';
+  buildReviewFormInner();
+  if(showForm)rf.style.display='block';
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function buildReviewFormInner(){
+  const inner=document.getElementById('review-form-inner');
+  if(!currentUser){
+    inner.innerHTML=`<div class="login-prompt">You need to <a onclick="closeModal('detail-modal');openAuth('login')">log in</a> to write a review. <a onclick="closeModal('detail-modal');openAuth('register')">Create a free account</a>.</div>`;
+    return;
+  }
+  inner.innerHTML=`
+    <div class="form-group"><label>Your name</label><input type="text" id="rv-name" value="${currentUser.name}" placeholder="Anonymous"></div>
+    <div class="form-group"><label>Rating</label>
+      <div class="star-picker" id="star-picker">
+        ${[1,2,3,4,5].map(v=>`<button class="star-btn" data-v="${v}" onclick="setStar(${v})">&#9733;</button>`).join('')}
+      </div>
+    </div>
+    <div class="form-group"><label>Your review</label><textarea id="rv-text" style="min-height:80px;" placeholder="What did you think?"></textarea></div>
+    <button class="btn-primary" onclick="submitReview()">Post Review</button>`;
+}
+
+function renderLongDesc(paras,el){
+  el.innerHTML=paras.map((p,i)=>{
+    if(i===paras.length-1){
+      let cls='teen-box';
+      const lo=p.toLowerCase();
+      if(lo.includes('caution')||lo.includes('mature')||lo.includes('some')||lo.includes('older'))cls+=' caution';
+      if(lo.includes('not recommended')||lo.includes('adult only'))cls+=' adult';
+      return`<div class="${cls}"><div class="teen-label">Teen Suitability</div><p>${p}</p></div>`;
+    }
+    return`<p>${p}</p>`;
+  }).join('');
+}
+
+async function expandDescription(){
+  if(!activeBook)return;
+  const btn=document.getElementById('dm-expand-btn');
+  const descEl=document.getElementById('dm-desc');
+  btn.disabled=true;btn.textContent='Generating...';
+  descEl.innerHTML=`<div class="loading-row"><div class="spinner"></div>Writing a detailed introduction...</div>`;
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:`Write a detailed introduction to the book "${activeBook.title}" by ${activeBook.author} for a highly intelligent and curious high school student. Write exactly 7 paragraphs, no headings, no markdown. Paragraphs 1-6: (1) central premise, (2) author background, (3) key themes, (4) cultural significance, (5) what makes it unique, (6) cross-disciplinary connections. Paragraph 7: suitability for teenagers. Plain text only, paragraphs separated by a blank line.`}]})});
+    const data=await r.json();
+    const text=data.content?.find(c=>c.type==='text')?.text||'';
+    const paras=text.split(/\n\n+/).map(p=>p.trim()).filter(p=>p.length>30);
+    if(paras.length>=2){activeBook.longDesc=paras;renderLongDesc(paras,descEl);btn.style.display='none';}
+    else{descEl.innerHTML=`<p>${activeBook.desc}</p>`;btn.textContent='Expand with AI';btn.disabled=false;showToast('Could not generate. Try again.');}
+  }catch(e){descEl.innerHTML=`<p>${activeBook.desc}</p>`;btn.textContent='Expand with AI';btn.disabled=false;showToast('AI error. Try again.');}
+}
+
+function renderBookReviews(id){
+  const rs=BOOK_REVIEWS[id]||[];
+  const el=document.getElementById('dm-reviews');
+  if(!rs.length){el.innerHTML='<p class="no-reviews">No reviews yet - be the first!</p>';return;}
+  el.innerHTML=rs.map(r=>`<div class="review-item"><div class="review-meta"><span class="reviewer-name">${r.name}</span><span class="review-date">${r.date}</span></div><div class="review-stars">${'&#9733;'.repeat(r.stars)}${'&#9734;'.repeat(5-r.stars)}</div><div class="review-text">${r.text}</div></div>`).join('');
+}
+
+function showReviewForm(){const f=document.getElementById('review-form');f.style.display=f.style.display==='none'?'block':'none';if(f.style.display==='block')f.scrollIntoView({behavior:'smooth',block:'nearest'});}
+
+function setStar(n){
+  currentStar=n;
+  document.querySelectorAll('.star-btn').forEach(b=>b.classList.toggle('lit',parseInt(b.dataset.v)<=n));
+}
+
+function submitReview(){
+  if(!activeBook)return;
+  if(!currentStar){showToast('Please select a rating.');return;}
+  const text=document.getElementById('rv-text')?.value.trim();
+  if(!text){showToast('Please write something.');return;}
+  const name=document.getElementById('rv-name')?.value.trim()||'Anonymous';
+  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+  if(!BOOK_REVIEWS[activeBook.id])BOOK_REVIEWS[activeBook.id]=[];
+  BOOK_REVIEWS[activeBook.id].unshift({name,stars:currentStar,text,date});
+  renderBookReviews(activeBook.id);
+  document.getElementById('review-form').style.display='none';
+  filterBooks();showToast('Review posted!','success');
+}
+
+function openAdd(){
+  if(!currentUser){showToast('Please log in to add books.','info');openAuth('login');return;}
+  ['ab-title','ab-author','ab-desc','ab-amazon'].forEach(id=>document.getElementById(id).value='');
+  populateCatSelects();
+  document.getElementById('ab-cat').value='';
+  document.getElementById('ab-cat2').value='';
+  document.getElementById('add-modal').classList.add('open');
+}
+
+function addBook(){
+  const title=document.getElementById('ab-title').value.trim();
+  const author=document.getElementById('ab-author').value.trim();
+  const cat=document.getElementById('ab-cat').value;
+  const cat2=document.getElementById('ab-cat2').value;
+  const desc=document.getElementById('ab-desc').value.trim();
+  const amazon=document.getElementById('ab-amazon').value.trim();
+  if(!title||!author||!cat||!desc){showToast('Please fill in all required fields.');return;}
+  const cats=[cat];if(cat2&&cat2!==cat)cats.push(cat2);
+  BOOKS.push({id:nextBookId++,title,author,cats,desc,amazon:amazon||aUrl(title,author)});
+  closeModal('add-modal');filterBooks();showToast('"'+title+'" added!','success');
+}
+
+function confirmDeleteBook(id){
+  const b=BOOKS.find(x=>x.id===id);if(!b)return;
+  document.getElementById('confirm-msg').innerHTML='Remove <strong>"'+b.title+'"</strong> by '+b.author+'? This cannot be undone.';
+  pendingConfirm=()=>{BOOKS=BOOKS.filter(x=>x.id!==id);delete BOOK_REVIEWS[id];closeModal('confirm-modal');closeModal('detail-modal');filterBooks();showToast('Book removed.','danger');};
+  document.getElementById('confirm-ok-btn').onclick=()=>pendingConfirm&&pendingConfirm();
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+function confirmDeleteCat(key){
+  const cat=CATS[key];if(!cat)return;
+  const cnt=BOOKS.filter(b=>b.cats.includes(key)).length;
+  document.getElementById('confirm-msg').innerHTML='Remove the <strong>'+cat.label+'</strong> category? It will be removed from '+cnt+' book'+(cnt!==1?'s':'')+'.';
+  pendingConfirm=()=>{
+    BOOKS=BOOKS.map(b=>{const cats=b.cats.filter(c=>c!==key);return Object.assign({},b,{cats:cats.length?cats:['other']});});
+    delete CATS[key];if(activeFilter===key)activeFilter='all';
+    closeModal('confirm-modal');renderFilters();filterBooks();showToast('Category removed.','danger');
+  };
+  document.getElementById('confirm-ok-btn').onclick=()=>pendingConfirm&&pendingConfirm();
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+/* ===== BLOG ===== */
+function renderPosts(){
+  const q=document.getElementById('blog-search').value.toLowerCase();
+  const list=POSTS.filter(p=>!q||p.title.toLowerCase().includes(q)||p.body.toLowerCase().includes(q)||p.authorName.toLowerCase().includes(q));
+  const el=document.getElementById('blog-list-container');
+  if(!list.length){el.innerHTML='<div class="no-posts"><div class="big">&#9998;</div><p>'+(q?'No posts match your search.':'No posts yet. Be the first to write one!')+'</p></div>';return;}
+  el.innerHTML=list.slice().reverse().map(p=>{
+    const avgR=p.ratings.length?p.ratings.reduce((a,v)=>a+v,0)/p.ratings.length:0;
+    const excerpt=p.body.split('\n\n')[0].slice(0,240)+(p.body.length>240?'...':'');
+    const initials=p.authorName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const isOwner=currentUser&&currentUser.id===p.authorId;
+    return '<div class="blog-card" onclick="openPost('+p.id+')">'
+      +'<div class="blog-card-top">'
+      +'<div class="blog-card-meta">'
+      +'<div class="blog-avatar">'+initials+'</div>'
+      +'<div class="blog-author-info"><div class="name">'+p.authorName+'</div><div class="date">'+p.date+'</div></div>'
+      +(p.tag?'<span class="blog-tag">'+p.tag+'</span>':'')
+      +'</div>'
+      +'<div class="blog-card-actions" onclick="event.stopPropagation()">'
+      +(isOwner?'<button class="btn-sm danger" onclick="confirmDeletePost('+p.id+')">&#128465;</button>':'')
+      +'</div></div>'
+      +'<div class="blog-title">'+p.title+'</div>'
+      +'<div class="blog-excerpt">'+excerpt+'</div>'
+      +'<div class="blog-footer">'
+      +(avgR?'<div class="blog-rating-display"><span class="stars" style="font-size:12px;">'+('&#9733;').repeat(Math.round(avgR))+('&#9734;').repeat(5-Math.round(avgR))+'</span><span>'+avgR.toFixed(1)+' ('+p.ratings.length+')</span></div>':'<span>No ratings yet</span>')
+      +'<div class="blog-stat">&#128172; '+p.comments.length+' comment'+(p.comments.length!==1?'s':'')+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function filterPosts(){renderPosts();}
+
+function openPost(id){
+  const p=POSTS.find(x=>x.id===id);if(!p)return;
+  currentPostId=id;
+  document.getElementById('blog-list-view').style.display='none';
+  document.getElementById('blog-post-view').style.display='block';
+  document.getElementById('pv-title').textContent=p.title;
+  const initials=p.authorName.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('pv-avatar').textContent=initials;
+  document.getElementById('pv-author').textContent=p.authorName+(p.tag?' · '+p.tag:'');
+  document.getElementById('pv-date').textContent=p.date;
+  document.getElementById('pv-body').innerHTML=p.body.split('\n\n').map(para=>'<p>'+para+'</p>').join('');
+  renderPostRating(p);
+  renderPostComments(p);
+  window.scrollTo(0,0);
+}
+
+function closeBlogPost(){
+  document.getElementById('blog-list-view').style.display='';
+  document.getElementById('blog-post-view').style.display='none';
+  currentPostId=null;
+  renderPosts();
+}
+
+function renderPostRating(p){
+  const picker=document.getElementById('pv-star-picker');
+  const summary=document.getElementById('pv-rate-summary');
+  const already=document.getElementById('pv-rate-already');
+  const avgR=p.ratings.length?p.ratings.reduce((a,v)=>a+v,0)/p.ratings.length:0;
+  summary.textContent=p.ratings.length?(avgR.toFixed(1)+' / 5  ('+p.ratings.length+' rating'+(p.ratings.length!==1?'s':'')+')'):'No ratings yet.';
+  postRatingStar=0;
+  if(!currentUser){
+    picker.innerHTML='<span style="font-size:13px;color:var(--ink-faint);font-style:italic;"><a style="color:var(--accent);cursor:pointer;" onclick="openAuth(\'login\')">Log in</a> to rate this post.</span>';
+    already.style.display='none';return;
+  }
+  const userRated=p._ratedBy&&p._ratedBy[currentUser.id];
+  if(userRated){picker.innerHTML='';already.style.display='';already.textContent='You rated this post '+userRated+' star'+(userRated!==1?'s':'')+'.';return;}
+  already.style.display='none';
+  picker.innerHTML=[1,2,3,4,5].map(v=>'<button id="pvs'+v+'" onclick="setPostStar('+v+')" title="'+v+' star'+(v!==1?'s':'')+'">&#9733;</button>').join('');
+}
+
+function setPostStar(n){
+  postRatingStar=n;
+  [1,2,3,4,5].forEach(v=>{const b=document.getElementById('pvs'+v);if(b)b.classList.toggle('lit',v<=n);});
+  submitPostRating(n);
+}
+
+function submitPostRating(n){
+  const p=POSTS.find(x=>x.id===currentPostId);if(!p||!currentUser)return;
+  if(!p._ratedBy)p._ratedBy={};
+  p._ratedBy[currentUser.id]=n;
+  p.ratings.push(n);
+  renderPostRating(p);
+  const avgR=p.ratings.reduce((a,v)=>a+v,0)/p.ratings.length;
+  document.getElementById('pv-rate-summary').textContent=avgR.toFixed(1)+' / 5  ('+p.ratings.length+' rating'+(p.ratings.length!==1?'s':'')+')';
+  showToast('You rated this post '+n+' star'+(n!==1?'s':'')+'.','success');
+}
+
+function renderPostComments(p){
+  const el=document.getElementById('pv-comments');
+  const title=document.getElementById('pv-comments-title');
+  title.textContent='Comments ('+p.comments.length+')';
+  if(!p.comments.length){el.innerHTML='<p class="no-comments">No comments yet. Start the conversation!</p>';}
+  else{el.innerHTML=p.comments.map(c=>'<div class="comment-item"><div class="comment-meta"><span class="comment-name">'+c.name+'</span><span class="comment-date">'+c.date+'</span></div><div class="comment-text">'+c.text+'</div></div>').join('');}
+  buildCommentForm(p);
+}
+
+function buildCommentForm(p){
+  const el=document.getElementById('pv-comment-form');
+  if(!currentUser){
+    el.innerHTML='<div class="login-prompt">Want to join the conversation? <a onclick="openAuth(\'login\')">Log in</a> or <a onclick="openAuth(\'register\')">create a free account</a>.</div>';
+    return;
+  }
+  el.innerHTML='<h4>Leave a Comment</h4>'
+    +'<div class="form-group"><label>Name</label><input type="text" id="cm-name" value="'+currentUser.name+'"></div>'
+    +'<div class="form-group"><label>Your comment *</label><textarea id="cm-text" style="min-height:80px;" placeholder="Share your thoughts on this post..."></textarea></div>'
+    +'<button class="btn-primary" onclick="submitComment('+p.id+')">Post Comment</button>';
+}
+
+function submitComment(postId){
+  const p=POSTS.find(x=>x.id===postId);if(!p||!currentUser)return;
+  const text=document.getElementById('cm-text')?.value.trim();
+  if(!text){showToast('Please write something.');return;}
+  const name=document.getElementById('cm-name')?.value.trim()||currentUser.name;
+  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+  p.comments.push({name,text,date});
+  renderPostComments(p);
+  showToast('Comment posted!','success');
+}
+
+function openNewPost(){
+  if(!currentUser){showToast('Please log in to post.','info');openAuth('login');return;}
+  if(currentUser.role!=='subscriber'){showToast('Only subscribers can post. Update your account role.','info');return;}
+  document.getElementById('pm-title').value='';
+  document.getElementById('pm-body').value='';
+  document.getElementById('pm-tag').value='';
+  document.getElementById('pm-error').textContent='';
+  document.getElementById('post-modal').classList.add('open');
+}
+
+function submitPost(){
+  const title=document.getElementById('pm-title').value.trim();
+  const body=document.getElementById('pm-body').value.trim();
+  const tag=document.getElementById('pm-tag').value;
+  const err=document.getElementById('pm-error');
+  if(!title){err.textContent='Please add a title.';return;}
+  if(body.length<50){err.textContent='Post content must be at least 50 characters.';return;}
+  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+  POSTS.push({id:nextPostId++,authorId:currentUser.id,authorName:currentUser.name,title,body,tag,date,ratings:[],comments:[]});
+  closeModal('post-modal');
+  renderPosts();
+  showToast('Post published!','success');
+}
+
+function confirmDeletePost(id){
+  const p=POSTS.find(x=>x.id===id);if(!p)return;
+  document.getElementById('confirm-msg').innerHTML='Delete <strong>"'+p.title+'"</strong>? This cannot be undone.';
+  pendingConfirm=()=>{POSTS=POSTS.filter(x=>x.id!==id);closeModal('confirm-modal');if(currentPostId===id)closeBlogPost();else renderPosts();showToast('Post deleted.','danger');};
+  document.getElementById('confirm-ok-btn').onclick=()=>pendingConfirm&&pendingConfirm();
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+/* ===== UTILITIES ===== */
+function closeModal(id,event){
+  if(event&&event.target!==document.getElementById(id))return;
+  document.getElementById(id).classList.remove('open');
+}
+
+function showToast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast'+(type?' '+type:'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ===== INIT ===== */
+populateCatSelects();
+renderFilters();
+filterBooks();
+initHeader();
+</script>
+</body>
+</html>
